@@ -1,35 +1,37 @@
 pipeline {
     agent any 
     
-    stages{
-        stage("Clone Code"){
+    stages {
+        stage ("code") {
             steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+                echo "cloning the code"
+                git url: "https://github.com/Vishal-pixel692/django-notes-app.git" ,branch: "main"
             }
         }
-        stage("Build"){
+        stage ("buid") {
             steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
+                echo "building the code"
+                sh "docker build . -t note-app"
             }
+            
         }
-        stage("Push to Docker Hub"){
+        stage ("push tdo docker hub") {
             steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
+                echo "pushing the image"
+                withCredentials([usernamePassword(credentialsId:"Dockerhub",passwordVariable:"dockerhubPass",usernameVariable:"dockerhubUser")]){
+                    sh "docker tag note-app ${env.dockerhubUser}/note-app:latest"
+                    sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubPass}"
+                    sh "docker push ${env.dockerhubUser}/note-app:latest"
                 }
             }
+            
         }
-        stage("Deploy"){
+        stage ("deploy") {
             steps {
-                echo "Deploying the containe"
-                sh "docker-compose down && docker-compose up -d"
-                
+                echo "deploying the contain."
+                sh 'docker-compose down && docker-compose up -d'
             }
         }
+        
     }
 }
